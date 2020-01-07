@@ -3,16 +3,26 @@ package app
 import(
 "net/http"
 "github.com/alishaagupta/microservices-with-go/mvc/controllers"
+"github.com/gin-gonic/gin"
 
 )
 
+var(
+	router *gin.Engine
+)
+
+func init(){
+
+	router = gin.Default()
+	// router = gin.New()
+}
 
 func StartApp(){
 
- http.HandleFunc("/users", controllers.GetUser) ;
+ mapUrls()
 
  // Launch the server
- if err := http.ListenAndServe(":7000", nil); err != nil {
+ if err := router.Run(":7000"); err != nil {
 	 panic(err)
  } 
 

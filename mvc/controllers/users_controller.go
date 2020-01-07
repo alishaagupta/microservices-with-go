@@ -8,15 +8,19 @@ import(
 	"github.com/alishaagupta/microservices-with-go/mvc/utils"
 
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 
 
 
 )
 
-func GetUser(resp http.ResponseWriter, req *http.Request){
+func GetUser(c *gin.Context){
 
 
-	userIdParam := req.URL.Query().Get("user_id");
+	// userIdParam := req.URL.Query().Get("user_id");
+
+	// Use c.Query("user_id") if sent as query parameter
+	userIdParam := c.Param("user_id")
 
 	log.Printf("About to process user_id %v ", userIdParam)
 
@@ -30,10 +34,14 @@ func GetUser(resp http.ResponseWriter, req *http.Request){
 			Code: "bad_request",
 		}
 
-		jsonValue, _ := json.Marshal(apiErr)
-		// Return the error to the client 
-		resp.WriteHeader(apiErr.StatusCode)
-		resp.Write(jsonValue)
+		// Equivalent to writing reposne to the client
+
+		c.JSON(apiErr.StatusCode, apiErr)
+
+		// jsonValue, _ := json.Marshal(apiErr)
+		// // Return the error to the client 
+		// resp.WriteHeader(apiErr.StatusCode)
+		// resp.Write(jsonValue)
 		return
 	}
 
@@ -42,13 +50,15 @@ func GetUser(resp http.ResponseWriter, req *http.Request){
 	if apiErr!= nil{
 		// Handle the error
 
-		resp.WriteHeader(apiErr.StatusCode)
-		resp.Write([]byte(apiErr.Message))
+		c.JSON(apiErr.StatusCode, apiErr)
+		// resp.WriteHeader(apiErr.StatusCode)
+		// resp.Write([]byte(apiErr.Message))
 		return
 	}
 
 	// Return user to the client
 
-	jsonValue, _ := json.Marshal(user)
-	resp.Write(jsonValue)
+	c.JSON(http.StatusOK, user)
+	// jsonValue, _ := json.Marshal(user)
+	// resp.Write(jsonValue)
 }
